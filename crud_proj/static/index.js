@@ -1,0 +1,1 @@
+console.log('MAIN JS STATIC FOR GENERIC');

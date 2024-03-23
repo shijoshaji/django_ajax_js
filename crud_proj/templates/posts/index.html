@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block scripts %}
+<script src="{% static 'posts/index.js' %}" defer></script>
+{% endblock scripts %}
+
+
+
+{% block title %}
+POST
+{% endblock title %}
+
+
+{% block content %}
+<div id="post-box"></div>
+
+<div id="hello-world"></div>
+
+{% endblock content %}
