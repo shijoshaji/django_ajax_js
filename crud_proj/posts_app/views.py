@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from django.shortcuts import render
-from django.core import serializers
+# from django.core import serializers
 
 from .models import Post
 
@@ -12,12 +12,44 @@ def post_list_and_create(request):
 
 
 def hello_world_view(request):
-    print('here we are trying for a ajax call')
+    print('here we are trying for a ajax call', request)
 
-    return JsonResponse({'text': 'Hellowodie'})
+    return JsonResponse({'text': 'Hello woodie'})
 
 
-def load_post_data_view(request):
+def load_post_data_view(request, num_of_posts):
+    print('here we are trying for a ajax call load post', request)
+    total_posts = Post.objects.all().count()
     qs = Post.objects.all()
-    data = serializers.serialize('json', qs)
-    return JsonResponse({'data': data})
+    # qs = Post.objects.order_by('-id')
+
+    # data = serializers.serialize('json', qs)
+
+    visible_posts = 2
+    upper_limit = num_of_posts
+    lower_limit = upper_limit - visible_posts
+
+    # data = []
+    # for obj in qs:
+    #     item = {
+    #         'id': obj.id,
+    #         'title': obj.title,
+    #         'body': obj.body,
+    #         'author': obj.author.user.username
+    #     }
+    #     data.append(item)
+    # NOTE: Above code can be written using list comprehension
+
+    data = [
+        {
+            'id': obj.id,
+            'title': obj.title,
+            'body': obj.body,
+            'author': obj.author.user.username,
+            'liked': request.user in obj.liked.all(),
+        }
+        for obj in qs
+    ]
+    if total_posts == len(data):
+        return JsonResponse({'data': data[lower_limit:upper_limit], 'size': total_posts})
+    return JsonResponse({'msg': 'Data exported is not right'})

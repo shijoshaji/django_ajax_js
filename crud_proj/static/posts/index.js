@@ -1,7 +1,8 @@
 console.log('POST JS loaded');
 
 let myId = document.getElementById('hello-world');
-
+let postsBox = document.getElementById('post-box');
+let loadBtn = document.getElementById('load-btn');
 
 $.ajax({
   type: 'GET',
@@ -14,3 +15,69 @@ $.ajax({
     console.log(error);
   },
 });
+
+let visible = 2;
+const getData = () => {
+  $.ajax({
+    type: 'GET',
+    url: `load_post/${visible}`,
+    success: function (response) {
+      if (response.size == visible) {
+        loadBtn.style.display = 'none';
+        myId.innerHTML = `
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+          <strong>All Records Fetched!</strong> No posts to load.
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        `;
+      }
+      if (response.data) {
+        let { data } = response;
+        data.forEach((element) => {
+          console.log(element);
+          // postsBox.innerHTML += JSON.stringify(element);
+          postsBox.innerHTML += `
+          <div class="card" style="width: 18rem;">
+            <div class="card-header">
+              ${element.author}
+            </div>
+            <div class="card-body">
+              <h5 class="card-title">${element.title}</h5>
+              <p class="card-text">${element.body}.</p>
+            </div>
+            <div class="card-footer">
+              <div class="row">
+                <div class="col-sm-6">
+                  <a href="# " class="btn btn-primary">Details </a>
+                </div>
+                <div class="col-sm-6 ">
+                  <a href="# " class="btn btn-primary">Like <3 [${element.liked}] </a>
+                </div>
+              </div>        
+            </div>
+          </div>
+          <br>
+          `;
+        });
+      } else {
+        postsBox.innerHTML = `
+        <div class="alert alert-danger" role="alert">
+          Data Fetched Failed!/ No Posts created
+        </div>
+  `;
+      }
+    },
+    error: function (error) {
+      console.log('err', error);
+    },
+  });
+};
+
+loadBtn.addEventListener('click', () => {
+  visible += 2;
+  getData();
+});
+
+getData();
