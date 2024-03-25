@@ -81,3 +81,17 @@ loadBtn.addEventListener('click', () => {
 });
 
 getData();
+
+let scrollLimit = 50; // Amount after which ajax() call initializes
+let limit = 3; // item count
+let offset = 6; // offset
+$(window).on('scroll', function () {
+  scrollPosition = $(this).scrollTop();
+  if (scrollPosition >= scrollLimit) {
+    visible += 2;
+    getData(); // loadContent method in which ajax() call is defined
+
+    // Update values on each scroll
+    scrollLimit += 50;
+  }
+});
