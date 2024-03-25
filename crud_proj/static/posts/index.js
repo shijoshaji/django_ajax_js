@@ -53,7 +53,10 @@ const getData = () => {
                   <a href="# " class="btn btn-primary">Details </a>
                 </div>
                 <div class="col-sm-6 ">
-                  <a href="# " class="btn btn-primary">Like <3 [${element.liked}] </a>
+                <button type="button" class="btn btn-primary">
+                <span class="badge badge-success">${element.likes_count}</span>Likes
+                
+              </button>
                 </div>
               </div>        
             </div>
@@ -88,10 +91,11 @@ let offset = 6; // offset
 $(window).on('scroll', function () {
   scrollPosition = $(this).scrollTop();
   if (scrollPosition >= scrollLimit) {
+    console.log('scroll');
     visible += 2;
     getData(); // loadContent method in which ajax() call is defined
 
     // Update values on each scroll
-    scrollLimit += 50;
+    scrollLimit += 500;
   }
 });

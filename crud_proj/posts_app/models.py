@@ -22,3 +22,7 @@ class Post(BaseModel):
 
     def __str__(self):
         return f"{self.title}"
+
+    @property
+    def like_counts(self):
+        return self.liked.all().count()

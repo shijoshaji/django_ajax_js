@@ -47,6 +47,7 @@ def load_post_data_view(request, num_of_posts):
             'body': obj.body,
             'author': obj.author.user.username,
             'liked': request.user in obj.liked.all(),
+            'likes_count': obj.like_counts,
         }
         for obj in qs
     ]
