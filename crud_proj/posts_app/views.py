@@ -54,3 +54,13 @@ def load_post_data_view(request, num_of_posts):
     if total_posts == len(data):
         return JsonResponse({'data': data[lower_limit:upper_limit], 'size': total_posts})
     return JsonResponse({'msg': 'Data exported is not right'})
+
+
+def like_unlike_post_view(request):
+    print('came here')
+    vpk = request.POST.get('pk')
+    print('vpk', vpk)
+    obj = Post.objects.get(pk=vpk)
+    liked = request.user not in obj.liked.all()
+    obj.liked.add(request.user) if liked else obj.liked.remove(request.user)
+    return JsonResponse({'liked': liked, 'count': obj.like_counts})

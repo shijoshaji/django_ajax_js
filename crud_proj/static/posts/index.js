@@ -4,6 +4,58 @@ let myId = document.getElementById('hello-world');
 let postsBox = document.getElementById('post-box');
 let loadBtn = document.getElementById('load-btn');
 
+const getCookie = (name) => {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      // Does this cookie string begin with the name we want?
+      if (cookie.substring(0, name.length + 1) === name + '=') {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+};
+const csrftoken = getCookie('csrftoken');
+
+const likeUnlikeForm = () => {
+  console.log('click action');
+  // const formArray = Array.from(document.getElementsByClassName('like_unlike_form'));
+  const formArray = [...document.getElementsByClassName('like_unlike_form')];
+  formArray.forEach((form) =>
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const clickedId = e.target.getAttribute('data-form-id');
+      console.log('clickedId', clickedId);
+      const clickedBtn = document.getElementById(`like-unlike-${clickedId}`);
+
+      $.ajax({
+        type: 'POST',
+        url: 'like_unlike/',
+        data: {
+          csrfmiddlewaretoken: csrftoken,
+          pk: clickedId,
+        },
+        success: function (response) {
+          console.log('res', response);
+          clickedBtn.textContent = response.liked ? ` ${response.count} Unlike` : `${response.count} Like`;
+          if (response.liked) {
+            clickedBtn.classList.add('btn-danger');
+          } else {
+            clickedBtn.classList.add('btn-primary');
+          }
+        },
+        error: function (err) {
+          console.log(err);
+        },
+      });
+    })
+  );
+};
+
 $.ajax({
   type: 'GET',
   url: 'hello/',
@@ -53,10 +105,12 @@ const getData = () => {
                   <a href="# " class="btn btn-primary">Details </a>
                 </div>
                 <div class="col-sm-6 ">
-                <button type="button" class="btn btn-primary">
-                <span class="badge badge-success">${element.likes_count}</span>Likes
-                
-              </button>
+                  <form class="like_unlike_form" data-form-id="${element.id}">   
+                                
+                    <button  class="btn btn-primary" id="like-unlike-${element.id}">
+                      <span class="badge badge-success">${element.likes_count}</span>Like              
+                    </button>
+                  </form>
                 </div>
               </div>        
             </div>
@@ -64,12 +118,9 @@ const getData = () => {
           <br>
           `;
         });
+        likeUnlikeForm();
       } else {
-        postsBox.innerHTML = `
-        <div class="alert alert-danger" role="alert">
-          Data Fetched Failed!/ No Posts created
-        </div>
-  `;
+        postsBox.innerHTML = `<div class="alert alert-danger" role="alert">Data Fetched Failed!/ No Posts created</div> `;
       }
     },
     error: function (error) {
